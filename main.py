@@ -27,6 +27,12 @@ def get_directed_movies(person_id: int) -> list[dict]:
     response.raise_for_status()
     crew = response.json().get("crew", [])
     return [m for m in crew if m.get("job") == "Director"]
+
+def get_movie_cast(movie_id: int) -> list[dict]:
+    url = f"{BASE_URL}/movie/{movie_id}/credits"
+    response = requests.get(url, headers=HEADERS)
+    response.raise_for_status()
+    return response.json().get("cast", [])
  
  
 results = search_director("Quentin Tarantino")
@@ -35,5 +41,10 @@ print(f"Found: {director['name']} (ID: {director['id']})")
  
 movies = get_directed_movies(director["id"])
 print(director ["name"], "has directed", len(movies), "movies.")
+
 for movie in movies:
-    print(movie["title"])
+    print(f"\n{movie['title']}")
+    cast = get_movie_cast(movie["id"])
+    for actor in cast:
+        print(f"  - {actor['name']} as {actor['character']}")
+   
